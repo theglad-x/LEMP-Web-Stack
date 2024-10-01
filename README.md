@@ -1,6 +1,15 @@
 # WEB STACK IMPLEMENTATION (LEMP STACK)
+The LEMP web stack is a collection of software used to serve dynamic websites and web applications. It stands for:
+
+- **Linux:** The operating system on which the stack runs.
+- **Nginx (pronounced "Engine-X"):** A web server that handles HTTP requests, known for its performance and efficient handling of concurrent connections.
+- **MySQL:** The relational database management system used for storing and managing website data.
+- **PHP:** The server-side scripting language used for processing dynamic content.
+
+Together, these components form a powerful and efficient stack for hosting and managing web applications.
 
 # Implementation Steps
+This step-by-step guide walks through implementing a LEMP (Linux, Nginx, MySQL, PHP) stack on an AWS EC2 instance. It covers everything from launching an instance and setting up necessary services to connecting PHP to MySQL and creating a working web application.
 
 # Step 1 - Launch EC2 Instance
 
@@ -10,7 +19,6 @@
   4. Configure security group to allow port 80(HTTP) from anywhere and port 22 (SSH) from host machine IP
   5. Create VPC for networking
   6. Confirm that the instance is running
-![instance](https://github.com/user-attachments/assets/c3225621-7d1c-43e1-a775-9916658e79f7)
   7. Connect to the instance using SSH
 
 # Step 2 - Install Nginx Web Server 
@@ -250,11 +258,14 @@ The LEMP stack is now fully configured. To test that nginx is able to handle ngi
           print "Error!: " . $e->getMessage() . "<br/>";
           die();
       }
-      You can now access this page in your web browser by visiting the domain name or public IP address configured for your website, followed by /todo_list.php:
-
-  13. Access this page in the browser by using the domain or public IP adresesss followe by `
-http://<public-ip>/todo_list.php
+  
+  13. Access this page in the browser by using the domain or public IP adresesss followed by `/todo_list.php`
       ``` bash
           http://<public-ip>/todo_list.php
        ```
     
+The implementation of the LEMP web stack (Linux, Nginx, MySQL, PHP) on AWS EC2 provides a powerful, scalable, and efficient environment for hosting dynamic web applications. By following each step, from launching the EC2 instance to configuring Nginx to serve PHP and connecting MySQL to handle data, we created a robust web infrastructure that can support modern web development needs.
+
+This project highlights the process of configuring a secure and optimized server using open-source technologies, allowing seamless interaction between the server, database, and dynamic content. The successful retrieval of data from the MySQL database via PHP scripts demonstrated the full functionality of the LEMP stack.
+
+This project has provided me with hands-on experience with cloud infrastructure (AWS), server setup, and web development technologies, which are essential in modern DevOps and software development environments. The skills and knowledge gained here are critical for deploying scalable, secure, and high-performance web applications.
