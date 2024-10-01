@@ -1,50 +1,55 @@
-## WEB STACK IMPLEMENTATION (LEMP STACK)
+# WEB STACK IMPLEMENTATION (LEMP STACK)
 
-## Implementation Steps
+# Implementation Steps
 
 # Step 1 - Launch EC2 Instance
 
   1. Lanuch an Ec2 instance
 ![AWS](https://github.com/user-attachments/assets/f66c4226-e685-4b43-95bc-c6f81ac2f29f)
-  2. Create SSH key pair to access the instance
-  3. Configure security group to allow port 80(HTTP) from anywhere and port 22 (SSH) from host machine IP
-  4. Create VPC for networking
-  5. Confirm that the instance is running
+  3. Create SSH key pair to access the instance
+  4. Configure security group to allow port 80(HTTP) from anywhere and port 22 (SSH) from host machine IP
+  5. Create VPC for networking
+  6. Confirm that the instance is running
 ![instance](https://github.com/user-attachments/assets/c3225621-7d1c-43e1-a775-9916658e79f7)
-  6. Connect to the instance using SSH
+  7. Connect to the instance using SSH
 
 # Step 2 - Install Nginx Web Server 
-   1 Update web erver package index
-  ```bash
-  sudo apt update
-  ```
+  1. Update web server package index
+     ```
+     sudo apt update  
+     ```
   2. Install nginx
-   ```bash
-   sudo apt install nginx
-   ```
+     ```bash
+     sudo apt install nginx
+     ```
   3. Enable and verify that nginx is running
-   ```bash
-   sudo systemctl enable nginx
-   sudo systemctl status nginx
-   ```
+     ```bash
+     sudo systemctl enable nginx
+     sudo systemctl status nginx
+     ```
 ![status_nginx](https://github.com/user-attachments/assets/3dfb35a6-086b-4bac-9f15-74a2d6d555a4)
-    4. Test nginx access locally
-   ```bash
-   curl http://localhost:80
-   ```
+
+4. Test nginx access locally 
+    
+     ```
+      curl http://localhost:80
+     ```
+    
 ![curl](https://github.com/user-attachments/assets/b430adef-01ff-4b2a-b2b3-202673bc9ec9)
-    5. Test nginx server response to requests from the internet
-    ```
-    http://<public-IP-Addres>:80
-    ```
+5. Test nginx server response to requests from the internet
+      
+   ``` 
+      http://<public-IP-Addres>:80
+   ```
 ![nginx](https://github.com/user-attachments/assets/ff8da47c-03d2-4d6e-89ba-eb326fc3a875)
 
 # Step 3 - Install mysql
+  
   1. Install mysql-server
-  ```bash
-    sudo apt install mysql-server
-  ```
-  2. Enable and verify that MySQL is successfully installed and running
+      ```
+      sudo apt install mysql-server
+      ```
+  4. Enable and verify that MySQL is successfully installed and running
      ```bash
      sudo systemctl enable --now mysql
      sudo systemctl status mysql
@@ -59,7 +64,7 @@
 
   4. Set password for the root user, using mysql_native_password
        ```bash
-       ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'PassWord.1';
+      ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'PassWord.1';
        ```
   5. Exit mysql shell
      ```bash
@@ -92,35 +97,164 @@
      sudo mkdir /var/www/projectLEMP
      ```
   2. Assign ownership of the directory with the $USER environment variable, which will reference the current system user
-    ```bash
-      sudo chown -R $USER:$USER /var/www/projectLEMP
-    ```
-  3. Open a new configuration file in nginx's `sites-available` directory
-    ```bash
-      sudo nano /etc/nginx/sites-available/projectLEMP
-    ```
-  5. create a new blank file using any preferred a text editor and paste the following configuration:
      ```bash
-    # /etc/nginx/sites-available/projectLEMP
+     sudo chown -R $USER:$USER /var/www/projectLEMP
+     ```
+  3. Open a new configuration file in nginx's `sites-available` directory
+     ``` bash
+     sudo nano /etc/nginx/sites-available/projectLEMP
+     ```
+  4. create a new blank file using any preferred a text editor and paste the following configuration:
 
-    server {
-        listen 80;
-        server_name projectLEMP www.projectLEMP;
-        root /var/www/projectLEMP;
+     ```
+        # /etc/nginx/sites-available/projectLEMP
+        
+        server {
+            listen 80;
+            server_name projectLEMP www.projectLEMP;
+            root /var/www/projectLEMP;
+    
+            index index.html index.htm index.php;
+    
+            location / {
+              try_files $uri $uri/ =404;
+            }
+    
+            location ~ \.php$ {
+                include snippets/fastcgi-php.conf;
+                fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
+             }
+    
+            location ~ /\.ht {
+                deny all;
+            }
+          }
+  5. Link the configuration file to the config file from Nginx's `sites-enabled` to activate it
+     ```bash
+     sudo ln -s /etc/nginx/sites-available/projectLEMP /etc/nginx/sites-enabled/
+     ```
+  6. Test the configuration for syntax error
+     ```bash
+     sudo nginx -t
+     ```
+   7. Disable default Nginx host that is currently configured to listen on port 80
+      ```bash
+      sudo unlink /etc/nginx/sites-enabled/default
+      ```
+  8. Reload Nginx to apply changes
+     ```bash
+     sudo systemctl reload nginx
+     ```
+9. The website is now active, but the project root directory `/var/www/projectLEMP/` is still empty. `index.html` file is creaated to test that to test that the new server block is works as expected.
+    ```bash
+    sudo echo 'This is LEMP Web Stack Project' > /var/www/projectLEMP/index.html
+    ```
+10. Acess the serve from the browser using your public IP address or domain name
+    ```bash
+    http://your_domain_or_IP_address
+    ```
+   ![projectLEMP](https://github.com/user-attachments/assets/a95ab880-8175-4f64-b94e-2eebcffd4402)
 
-        index index.html index.htm index.php;
+## Step 6 - Testing PHP with Nginx
+The LEMP stack is now fully configured. To test that nginx is able to handle nginx `.php` files off PHP processor. 
+  1. Create PHP script file in the project root directory, open the file in text editor.
+     ```bash
+     nano /var/www/projectLEMP/info.php
+     ```
+  Type or paste the following lines into the new file. This is valid PHP code that will return information about your server
+  ```bash
+      <?php
+      phpinfo();
+      ?>
+  ```
+  2. Access the page on the browser using the IP address or domain name
+     ```bash
+     http://<public-ip>/info.php
+     ```
+![php](https://github.com/user-attachments/assets/807ec18a-8e9a-42d4-b37a-ecd57c11bad2)
 
-        location / {
-          try_files $uri $uri/ =404;
+## Step 6 - Retrieving data from MySQL database with PHP
+  1. connect to the MySQL console using the root account
+     ```bash
+     sudo mysql -u root -p
+     ```
+  2. To create a new database, run the following command from your MySQL console
+     ```bash
+     CREATE DATABASE example_database;
+     ```
+  3. Create a new user and grant the user full privilage on the database created
+     ```bash
+     CREATE USER 'example_user'@'%' IDENTIFIED WITH mysql_native_password BY 'PassWord.1';
+      ```
+
+     ```bash
+     GRANT ALL ON example_database.* TO 'example_user'@'%';
+      ```
+  4. Exit the nysql shell with
+     ```bash
+     exit
+     ```
+  5. Test if the new user created has the proper permissions by logging in to the mysql console again
+     ```bash
+     mysql -u example_user -p
+     ```
+  6. Confirm the user's access to the `example_database` database
+     ```bash
+     SHOW DATABASES;
+     ```
+![database](https://github.com/user-attachments/assets/b942f202-d95c-4453-b0bb-dba7db81c2f6)
+
+7. Create a test table named `todo_list` From the MySQL console, run the following statement:
+      ```bash
+    mysql> CREATE TABLE steghub_DB.todo_list (
+    mysql> item_id INT AUTO_INCREMENT,
+    mysql> content VARCHAR(255),
+    mysql> PRIMARY KEY(item_id)
+    );
+   ```
+8. Insert a few rows of content in the test table
+     ```bash
+    INSERT INTO example_database.todo_list (content) VALUES ("My first important item");
+    ```
+ 9. Confirm that the data was successfully saved
+     ```bash
+     mysql> SELECT * FROM example_database.todo_list;
+     ```
+![todo_list](https://github.com/user-attachments/assets/c9aae217-7192-4038-bd92-f0d392de4622)
+
+  10. After confirming that you have valid data in your test table, you can exit the MySQL console
+      ```bash
+      exit
+      ```
+  11. Create a PHP srip that will connect to MySQL and query the content. Create a new PHP file in the poject root directory using any preferred text editor .
+      ```bash
+          nano /var/www/projectLEMP/todo_list.php
+      ```
+12. Copy this content into the `todo_list` php script
+  
+      ```base
+      <?php
+      $user = "example_user";
+      $password = "password";
+      $database = "example_database";
+      $table = "todo_list";
+      
+      try {
+        $db = new PDO("mysql:host=localhost;dbname=$database", $user, $password);
+        echo "<h2>TODO</h2><ol>"; 
+        foreach($db->query("SELECT content FROM $table") as $row) {
+          echo "<li>" . $row['content'] . "</li>";
         }
-
-        location ~ \.php$ {
-            include snippets/fastcgi-php.conf;
-            fastcgi_pass unix:/var/run/php/php7.4-fpm.sock;
-         }
-
-        location ~ /\.ht {
-            deny all;
-        }
+        echo "</ol>";
+      } catch (PDOException $e) {
+          print "Error!: " . $e->getMessage() . "<br/>";
+          die();
       }
-6. 
+      You can now access this page in your web browser by visiting the domain name or public IP address configured for your website, followed by /todo_list.php:
+
+  13. Access this page in the browser by using the domain or public IP adresesss followe by `
+http://<public-ip>/todo_list.php
+      ``` bash
+          http://<public-ip>/todo_list.php
+       ```
+    
